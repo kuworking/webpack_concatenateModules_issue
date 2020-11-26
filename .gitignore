@@ -1,0 +1,26 @@
+uploads/
+upgrade/
+no_git/
+
+**/vendor/
+**/wp-content/
+**/node_modules/
+**/.cache/
+**/public/
+**/_build/
+**/bin/
+
+composer.lock
+yarn.lock
+yarn-error.log
+lerna-debug.log
+
+**/composer.lock
+**/yarn.lock
+**/yarn-error.log
+**/lerna-debug.log
+
+# Generated file
+/src/_includes/layouts/css.js
+
+webfonts.env.json
