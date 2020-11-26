@@ -53,6 +53,8 @@ module.exports = {
   ...(!isDev && {
     optimization: {
       concatenateModules: true,
+//      concatenateModules: false,
+
 
       
       nodeEnv: 'production', // reduces a lot bundle size by making sude webpack understands we are in production mode - https://webpack.js.org/configuration/optimization/
