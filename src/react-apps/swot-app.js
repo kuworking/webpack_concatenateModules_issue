@@ -21,13 +21,9 @@ window.addEventListener
   */
 
 const q = u => `@media (min-width: ${u}px)`
-const qq = u => `@media (max-width: ${u}px)`
-const qem = u => `@media (min-width: ${u}em)`
-const qqem = u => `@media (max-width: ${u}em)`
 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { useLocalStorage } from './hooks/uselocalstorage'
-import { wait, SPACE } from '../../src/components/shared'
 
 const colors = [
   {
@@ -51,49 +47,49 @@ const colors = [
 const data = [
   {
     columnId: 'd',
-    text: 'Debilidades',
+    text: 'Example 1',
     ref: 0,
     items: [
       {
         id: 'elemento-1',
         idNum: 1,
-        text: 'Debilidad 1',
+        text: 'Example 1',
       },
     ],
   },
   {
     columnId: 'a',
-    text: 'Amenazas',
+    text: 'Example 2',
     ref: 1,
     items: [
       {
         id: 'elemento-2',
         idNum: 2,
-        text: 'Amenaza 1',
+        text: 'Example 2',
       },
     ],
   },
   {
     columnId: 'f',
-    text: 'Fortalezas',
+    text: 'Example 3',
     ref: 2,
     items: [
       {
         id: 'elemento-3',
         idNum: 3,
-        text: 'Fortaleza 1',
+        text: 'Example 3',
       },
     ],
   },
   {
     columnId: 'o',
-    text: 'Oportunidades',
+    text: 'Example 4',
     ref: 3,
     items: [
       {
         id: 'elemento-4',
         idNum: 4,
-        text: 'Oportunidad 1',
+        text: 'Example 4',
       },
     ],
   },
@@ -111,15 +107,6 @@ const reorder = (list, startColumn, endColumn, startIndex, endIndex) => {
 export const Tool = data2 => {
   const [theCode, setTheCode] = useState([]) // show-hide the panel
   const theCodeRef = useRef()
-  const copyText = async () => {
-    await wait(500)
-    const range = new Range()
-    range.selectNodeContents(theCodeRef.current)
-    const sel = document.getSelection()
-    sel.removeAllRanges()
-    sel.addRange(range)
-    document.execCommand('copy')
-  }
 
   const refs = [useRef(), useRef(), useRef(), useRef()] // if inside data, then when storing it causes a JSON error
   const [dafo, setDafo] = useLocalStorage('kwdafo', JSON.parse(JSON.stringify(data)))
@@ -134,8 +121,6 @@ export const Tool = data2 => {
     const new_elements = reorder(dafo, source.droppableId, destination.droppableId, source.index, destination.index)
     setDafo(new_elements)
   }
-
-  const [palette, setPalette] = useLocalStorage('kwdafocolor', 0)
 
   const addElement = panel => {
     const highestIndex = Math.max.apply(null, dafo.map(el => el.items.map(it => it.idNum)).flat()) + 1
@@ -167,9 +152,7 @@ export const Tool = data2 => {
                 <Draggable draggableId={el.id} index={i} key={el.id}>
                   {(provided, snapshot) => (
                     <Item ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                      <img src="/images/tools/dafo/move.svg" />
                       {el.text}
-                      <img src="/images/tools/dafo/delete.svg" onClick={() => removeElement(el)} />
                     </Item>
                   )}
                 </Draggable>
@@ -181,28 +164,16 @@ export const Tool = data2 => {
 
         <div>{/*expand*/}</div>
         <div>
-          <TextArea ref={refs[panel.ref]} /> <Button onClick={() => addElement(panel)}>Añadir</Button>
+          <TextArea ref={refs[panel.ref]} /> <Button onClick={() => addElement(panel)}>Add</Button>
         </div>
       </div>
     </>
   )
 
-  const Colors = () =>
-    colors.map((_, i) => (
-      <Palette key={`pal${i}`} palette={colors[i]} onClick={() => setPalette(i)}>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </Palette>
-    ))
-
   return (
     <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
       <TheCode show={theCode.length ? 1 : 0} contenteditable="true">
-        <img src="/images/tools/dafo/delete.svg" onClick={() => setTheCode([])} />
-
-        <div ref={theCodeRef} onClick={copyText}>
+        <div ref={theCodeRef}>
           {theCode.map((col, i) => (
             <React.Fragment key={`coprow1${i}`}>
               <div>{col.text}</div>
@@ -216,22 +187,8 @@ export const Tool = data2 => {
         </div>
       </TheCode>
 
-      <SPACE blk space="50px" />
-
-      <Options>
-        <Colors />
-      </Options>
-
-      <SPACE blk space="25px" />
-
-      <Reset onClick={resetLocalStorage}>Resetear</Reset>
-      <SPACE blk space="5px" />
-      <Reset onClick={() => setTheCode(dafo)}>Copiar Texto</Reset>
-
-      <SPACE blk space="25px" />
-
       <DragDropContext onDragEnd={onDragEnd}>
-        <Grid palette={colors[palette]}>
+        <Grid palette={colors[0]}>
           {dafo.map((el, i) => (
             <Panel panel={el} key={`colum${i}`} />
           ))}
@@ -360,61 +317,6 @@ const Grid = styled.div`
     font-weight: 700;
     text-align: center;
     text-transform: uppercase;
-  }
-`
-
-const Options = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 80px);
-  grid-gap: 5px;
-
-  & > div {
-    margin: 5px;
-    box-shadow: 4px 4px 6px #b8b8b859;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    &:hover {
-      box-shadow: 4px 4px 6px #000;
-    }
-  }
-`
-
-const Palette = styled.div`
-  & > div:nth-of-type(1) {
-    background-color: ${props => props.palette.background[0]};
-    height: 30px;
-  }
-  & > div:nth-of-type(2) {
-    background-color: ${props => props.palette.background[1]};
-    height: 20px;
-  }
-  & > div:nth-of-type(3) {
-    background-color: ${props => props.palette.background[2]};
-    height: 10px;
-  }
-  & > div:nth-of-type(4) {
-    background-color: ${props => props.palette.background[3]};
-    height: 10px;
-  }
-`
-
-const Reset = styled.div`
-  cursor: pointer;
-  border-radius: 8px;
-  height: 100%;
-  font-weight: 700;
-  text-transform: uppercase;
-  background: #ff0000b0;
-  mix-blend-mode: luminosity;
-  && {
-    color: #fff;
-  }
-  transition: 0.2s ease;
-  width: fit-content;
-  padding: 10px;
-  &:hover {
-    box-shadow: 4px 4px 6px #000;
   }
 `
 
